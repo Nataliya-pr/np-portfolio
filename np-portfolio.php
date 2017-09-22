@@ -10,3 +10,7 @@ Author URI: https://automattic.com/wordpress-plugins/
 License: GPLv2 or later
 Text Domain: np-portfolio
 */
+
+
+require_once plugin_dir_path(__FILE__) . 'post_types.php';
+
