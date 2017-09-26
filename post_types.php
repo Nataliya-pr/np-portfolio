@@ -40,7 +40,7 @@ function np_add_portfolio() {
         'label'                 => __( 'Portfolio', 'np-portfolio' ),
         'description'           => __( 'My work samples', 'np-portfolio' ),
         'labels'                => $labels,
-        'supports'              => array( 'title', 'editor', 'author'),
+        'supports'              => array( 'title', 'editor', 'author', 'thumbnail',),
         'taxonomies'            => array( '' ),
         'hierarchical'          => false,
         'public'                => true,
