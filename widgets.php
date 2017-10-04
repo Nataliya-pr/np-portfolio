@@ -1,0 +1,90 @@
+<?php
+
+class NP_Portfolio_Widget extends WP_Widget {
+     public function __construct() {
+        $args = array(
+            'classname' => 'np_portfolio_widget',
+            'description' => __('Displays latest Portfolio items', 'np-portfolio'),
+        );
+
+        parent::__construct( 'np_portfolio_widget',  __('Portfolio items', 'np-portfolio'), $args );
+    }
+
+    public function form( $instance ) {
+        $title = ! empty( $instance['title'] ) ? $instance['title'] : esc_html__( 'Latest Portfolios', 'np-portfolio' );
+        $num_items = ! empty( $instance['num_items'] ) ? $instance['num_items'] : 3;
+        $sort = ! empty( $instance['sort'] ) ? $instance['sort'] : 'date';
+
+        ?>
+
+    <p>
+        <label for="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>"><?php esc_attr_e( 'Title:', 'np-portfolio' ); ?></label>
+        <input class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'title' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'title' ) ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>">
+    </p>
+
+    <p>
+        <label for="<?php echo esc_attr( $this->get_field_id( 'num_items' ) ); ?>"><?php esc_attr_e( 'Number of items:', 'np-portfolio' ); ?></label>
+
+        <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'num_items' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'num_items' ) ); ?>" >
+          <?php for ($i = 1; $i <= 10; $i++): ?>
+            <option <?php if ($num_items == $i) echo 'selected="selected"'?> ><?=$i?></option>
+          <?php endfor; ?>
+        </select>
+    </p>
+
+     <p>
+        <label for="<?php echo esc_attr( $this->get_field_id( 'sort' ) ); ?>"><?php esc_attr_e( 'Sorting:', 'np-portfolio' ); ?></label>
+        <select class="widefat" id="<?php echo esc_attr( $this->get_field_id( 'sort' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'sort' ) ); ?>" >
+          <option <?php if ($sort == 'date') echo 'selected="selected"'?> value="date"><?=__('Date', 'np-portfolio');?></option>
+          <option <?php if ($sort == 'title') echo 'selected="selected"'?> value="title"><?=__('Title', 'np-portfolio');?></option>
+        </select>
+    </p>
+
+    <?php
+
+    }
+
+   public function widget($args, $instance) {
+       echo $args['before_widget'];
+
+       $title = ! empty( $instance['title'] ) ? $instance['title'] : __('Latest portfolio', 'np-portfolio');
+       $num_items = ! empty( $instance['num_items'] ) ? $instance['num_items'] : 3;
+       $sort = ! empty( $instance['sort'] ) ? $instance['sort'] : 'date';
+
+       if ( ! empty( $title ) ) {
+         echo $args['before_title'] . apply_filters( 'widget_title', $title ) . $args['after_title'];
+       }
+
+       $params = [
+         'post_type'   => 'np_portfolio',
+         'post_status' => 'publish',
+         'orderby'     => 'date',
+         'order'       => 'DESC',
+         'posts_per_page' => $num_items,
+       ];
+
+        if ( $sort == 'title' ) {
+          $params['orderby'] = 'title';
+          $params['order'] = 'ASC';
+        }
+
+       $query = new WP_Query($params);
+
+       foreach ($query->posts as $portfolio) {
+         ?>
+         <p>
+           <a href="<?=get_the_permalink($portfolio->ID);?>"><?=get_the_title($portfolio->ID);?></a>
+         </p>
+         <?php
+       }
+
+       echo $args['after_widget'];
+     }
+
+}
+
+add_action( 'widgets_init', 'np_portfolio_widget');
+
+function np_portfolio_widget() {
+    register_widget( 'NP_Portfolio_Widget' );
+}
